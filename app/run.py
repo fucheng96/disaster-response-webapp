@@ -65,8 +65,9 @@ def index():
     
     # Graph 2: Distribution of Response Categories
     n_response_cols = 36
-    resp_cat_counts = df.iloc[:,-n_response_cols:].sum().values
-    resp_cat_names = df.iloc[:,-n_response_cols:].columns
+    resp_cat_counts = df.iloc[:,-n_response_cols:].sum()
+    resp_cat_counts = resp_cat_counts.sort_values(ascending=False)
+    resp_cat_names = list(resp_cat_counts.index)  
     
     # Create visuals using Plotly
     graphs = [
