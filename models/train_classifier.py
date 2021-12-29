@@ -87,7 +87,7 @@ def build_model():
     
     """
     OUTPUT:
-        Machine Learning pipeline using Gradient-Boosting to process and classify text messages
+        Machine Learning pipeline using AdaBoost to process and classify text messages
     """
     
     # Machine Learning pipeline
