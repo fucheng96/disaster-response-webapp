@@ -9,7 +9,7 @@ def load_data(messages_filepath, categories_filepath):
     INPUT:
         messages_filepath - File path to the messages in CSV format
         categories_filepath - File path to the message categories in CSV format
-    Output:
+    OUTPUT:
         df - Combined dataset containing messages and its categories
     """
     
@@ -28,7 +28,7 @@ def clean_data(df):
     """    
     INPUT:
         df - Combined dataset containing messages and its categories
-    Output:
+    OUTPUT:
         df_cleaned - Cleansed dataset with indicator columns of each response category
     """
     
@@ -72,13 +72,14 @@ def save_data(df, database_filename):
     """    
     INPUT:
         df - Combined dataset containing messages and its categories
-        database_filename - Name of database which should not end with ".db"
+        database_filename - Name of database which should end with ".db"
     """
     
     # Create the SQL engine
-    engine = create_engine('sqlite:///' + database_filename + '.db')
+    engine = create_engine('sqlite:///' + database_filename)
     
     # Output SQL database
+    database_filename = database_filename.replace('.db', '')
     df.to_sql(database_filename, engine, index=False, if_exists='replace')
 
 
