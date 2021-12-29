@@ -67,7 +67,7 @@ def clean_data(df):
     return df_cleaned
 
 
-def save_data(df, database_filename):
+def save_data(df, database_filepath):
     
     """    
     INPUT:
@@ -76,9 +76,10 @@ def save_data(df, database_filename):
     """
     
     # Create the SQL engine
-    engine = create_engine('sqlite:///' + database_filename)
+    engine = create_engine('sqlite:///' + database_filepath)
     
     # Output SQL database
+    database_filename = database_filepath.split('/')[1]
     database_filename = database_filename.replace('.db', '')
     df.to_sql(database_filename, engine, index=False, if_exists='replace')
 

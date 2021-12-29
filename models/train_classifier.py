@@ -18,7 +18,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import confusion_matrix, classification_report
 
 
@@ -39,6 +39,7 @@ def load_data(database_filepath):
     cur = conn.cursor()
     
     # Import data table from database
+    database_filename = database_filepath.split('/')[1]
     database_filename = database_filename.replace('.db', '')
     sql_command = "SELECT * FROM " + database_filename
     df = pd.read_sql(sql_command, con=conn)
@@ -93,7 +94,7 @@ def build_model():
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(GradientBoostingClassifier()))
+        ('clf', MultiOutputClassifier(AdaBoostClassifier()))
     ])
     
     return pipeline
