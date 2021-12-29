@@ -6,7 +6,7 @@ import numpy as np
 import pickle
 from sqlalchemy import create_engine
 
-# Natural language toolkit libraries
+# Import natural language toolkit libraries
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
