@@ -55,15 +55,15 @@ There are 3 main components to this project:
 
 1. Screenshot of landing page. 
 
-![Screenshot 1]()
+   ![Screenshot 1]()
 
 2. Screenshot of text input and identified categories.
 
-![Screenshot 2]()
+   ![Screenshot 2]()
 
 3. Screenshots of dataset used to train the ML pipeline.
 
-![Screenshot]()
+   ![Screenshot 3]()
 
 ## Acknowledgements
 
