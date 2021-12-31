@@ -3,10 +3,10 @@ import re
 import json
 import plotly
 import pandas as pd
+import joblib
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
-from sklearn.externals import joblib
 from sqlalchemy import create_engine
 
 # Import natural language toolkit libraries
@@ -19,22 +19,22 @@ nltk.download(['punkt', 'wordnet', 'stopwords', 'averaged_perceptron_tagger'])
 app = Flask(__name__)
 
 def tokenize(text):
-    
+
     """
     INPUT:
         text - Text message that would need to be tokenized
     OUTPUT:
         clean_tokens - List of tokens extracted from the text message
     """
-    
+
     # Detect & remove punctuations from the message
-    detected_punctuations = re.findall('[^a-zA-Z0-9]', text)   
+    detected_punctuations = re.findall('[^a-zA-Z0-9]', text)
     for punctuation in detected_punctuations:
         text = text.replace(punctuation, " ")
 
     # Tokenize the words
     tokens = word_tokenize(text)
-    
+
     # Lemmanitizer to reduce words to its stems
     lemmatizer = WordNetLemmatizer()
 
@@ -47,7 +47,7 @@ def tokenize(text):
 # Load data
 engine = create_engine('sqlite:///data/DisasterResponse.db')
 df = pd.read_sql_table('DisasterResponse', engine)
-    
+
 # Load model
 model = joblib.load('models/classifier.pkl')
 
@@ -57,18 +57,18 @@ model = joblib.load('models/classifier.pkl')
 @app.route('/index')
 
 def index():
-    
+
     # Extract data needed for visuals
     # Graph 1: Distribution of Message Genres
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
-    
+
     # Graph 2: Distribution of Response Categories
     n_response_cols = 36
     resp_cat_counts = df.iloc[:,-n_response_cols:].sum()
     resp_cat_counts = resp_cat_counts.sort_values(ascending=False)
-    resp_cat_names = list(resp_cat_counts.index)  
-    
+    resp_cat_names = list(resp_cat_counts.index)
+
     # Create visuals using Plotly
     graphs = [
         # Graph 1: Distribution of Message Genres
@@ -90,7 +90,7 @@ def index():
                 }
             }
         },
-        
+
         # Graph 2: Distribution of Response Categories
         {
             'data': [
@@ -111,11 +111,11 @@ def index():
             }
         }
     ]
-    
+
     # Encode plotly graphs in JSON format
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
-    
+
     # Render web page with respective plotly graphs
     return render_template('master.html', ids=ids, graphJSON=graphJSON)
 
@@ -124,9 +124,9 @@ def index():
 @app.route('/go')
 
 def go():
-    
+
     # Save user input in query
-    query = request.args.get('query', '') 
+    query = request.args.get('query', '')
 
     # Use model to predict classification for query
     classification_labels = model.predict([query])[0]
