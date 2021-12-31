@@ -50,20 +50,21 @@ There are 3 main components to this project:
    `python app/run.py`
 
 3. Go to http://0.0.0.0:3001/ to view the web app.
+   If you are using Windows and unable to access http://0.0.0.0:3001/, you may replace "0.0.0.0" with your local IPv4 address which should looks like "192.XXX.X.XXX". Actual link will then be http://192.XXX.X.XXX:3001/. To get IPv4 address, follow the steps below:
+   
+   a. Go to Command Prompt by typing `cmd` in the search bar.
+   b. Type `ipconfig` and press enter.
+   c. Look for "IPv4 Address" which looks like "192.XXX.X.XXX".
 
 ## Web App Screenshots
 
 1. Screenshot of landing page. 
 
-   ![Screenshot 1]()
+   ![Screenshot 1](https://github.com/fucheng96/disaster-response-webapp/blob/main/screenshots/main_page.jpeg?raw=true)
 
-2. Screenshot of text input and identified categories.
+2. Screenshots of dataset used to train the ML pipeline.
 
-   ![Screenshot 2]()
-
-3. Screenshots of dataset used to train the ML pipeline.
-
-   ![Screenshot 3]()
+   ![Screenshot 3](https://github.com/fucheng96/disaster-response-webapp/blob/main/screenshots/training_dataset_overview.PNG?raw=true)
 
 ## Acknowledgements
 
