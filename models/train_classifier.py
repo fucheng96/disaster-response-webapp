@@ -19,12 +19,13 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import AdaBoostClassifier
+from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import confusion_matrix, classification_report
 
 
 def load_data(database_filepath):
-    
-    """    
+
+    """
     INPUT:
         database_filepath - File path to SQLite database which should end with ".db"
     OUTPUT:
@@ -32,12 +33,12 @@ def load_data(database_filepath):
         Y - Dataset containing all 36 indicator columns for each response category
         category_colnames - List of categories name
     """
-    
+
     # Create SQL engine to import SQLite database
     engine = create_engine('sqlite:///' + database_filepath)
     conn = engine.raw_connection()
     cur = conn.cursor()
-    
+
     # Import data table from database
     database_filename = database_filepath.split('/')[1]
     database_filename = database_filename.replace('.db', '')
@@ -45,35 +46,35 @@ def load_data(database_filepath):
     df = pd.read_sql(sql_command, con=conn)
     conn.commit()
     conn.close()
-    
+
     # Split dataset 'df' to features and target columns
     n_response_cols = 36 # Response variables are the last 36 columns
     X = df['message']
     y = df.iloc[:, -n_response_cols:]
-    
+
     # Get response variables column names
     category_colnames = y.columns.values
-    
+
     return X, y, category_colnames
 
 
 def tokenize(text):
-    
+
     """
     INPUT:
         text - Text message that would need to be tokenized
     OUTPUT:
         clean_tokens - List of tokens extracted from the text message
     """
-    
+
     # Detect & remove punctuations from the message
-    detected_punctuations = re.findall('[^a-zA-Z0-9]', text)   
+    detected_punctuations = re.findall('[^a-zA-Z0-9]', text)
     for punctuation in detected_punctuations:
         text = text.replace(punctuation, " ")
 
     # Tokenize the words
     tokens = word_tokenize(text)
-    
+
     # Lemmanitizer to reduce words to its stems
     lemmatizer = WordNetLemmatizer()
 
@@ -84,24 +85,32 @@ def tokenize(text):
 
 
 def build_model():
-    
+
     """
     OUTPUT:
         Machine Learning pipeline using AdaBoost to process and classify text messages
     """
-    
+
     # Machine Learning pipeline
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
         ('clf', MultiOutputClassifier(AdaBoostClassifier()))
     ])
-    
-    return pipeline
+
+    # List down the parameters for Grid Search
+    parameters = {
+        'clf__estimator__n_estimators': [50, 100],
+        'clf__estimator__learning_rate': [0.8, 1.0]
+    }
+
+    cv = GridSearchCV(pipeline, param_grid=parameters, n_jobs=-1, verbose=2, cv=4)
+
+    return cv
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
-    
+
     """
     INPUT:
         model - Trained Machine Learning pipeline
@@ -111,7 +120,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
     OUTPUT:
         Metrics including overall accuracy, precision, recall, f1-score & support
     """
-    
+
     # Predict on test data using trained model
     Y_pred = model.predict(X_test)
 
@@ -121,7 +130,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
-    
+
     """
     INPUT:
         model - Trained Machine Learning pipeline
@@ -129,7 +138,7 @@ def save_model(model, model_filepath):
     OUTPUT:
         Model saved in .pkl format
     """
-    
+
     # Save model
     pickle.dump(model, open(model_filepath, 'wb'))
 
@@ -140,13 +149,13 @@ def main():
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
-        
+
         print('Building model...')
         model = build_model()
-        
+
         print('Training model...')
         model.fit(X_train, Y_train)
-        
+
         print('Evaluating model...')
         evaluate_model(model, X_test, Y_test, category_names)
 
